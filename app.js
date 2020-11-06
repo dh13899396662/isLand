@@ -1,8 +1,8 @@
-const Koa = require('koa')
-const InitManager = require('./core/init')
-const parser = require('koa-bodyparser')
-require('./app/models/user')
-const catchError = require('./middlewares/exception')
+const Koa = require('koa') // 引入koa
+const InitManager = require('./core/init') // 项目初始配置
+const parser = require('koa-bodyparser') // 解析koa 返回 ctx.body
+require('./app/models/user') // 引入数据库初始化文件——没有创建数据库
+const catchError = require('./middlewares/exception') // 引入自己封装的 报错捕捉
 // const book = require('./api/v1/book')
 // const classic = require('./api/v1/classic')
 
