@@ -16,14 +16,15 @@ class WXManager {
         if (result.status !== 200) {
             throw new global.errs.AuthFaild('openid获取失败')
         }
-        const errorcode = result.data.errorcode
-        if (errorcode !== 0) {
-            throw new global.errs.AuthFaild('openid获取失败: ' + errorcode)
+        const errcode = result.data.errcode
+        const errmsg = result.data.errmsg
+        if (errcode) { // 腾讯的接口 成功不返回errCode，失败会返回
+            throw new global.errs.AuthFaild('openid获取失败: ' + errmsg)
         }
 
         let user = await User.getUserByOpenid(result.data.openid)
         if (!user) {
-            await User.registerByOpenid(result.data.openid)
+            user = await User.registerByOpenid(result.data.openid)
         }
 
         return generateToken(user.id, Auth.USER)

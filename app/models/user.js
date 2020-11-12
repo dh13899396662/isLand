@@ -30,9 +30,12 @@ class User extends Model {
     }
 
     static async registerByOpenid(openid) {
-        return await User.create({
-            openid
+        const user = await User.create({
+            where: {
+                openid
+            }
         })
+        return user
     }
 }
 

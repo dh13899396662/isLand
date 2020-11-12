@@ -1,4 +1,5 @@
 const Koa = require('koa') // 引入koa
+require('module-alias/register')
 const InitManager = require('./core/init') // 项目初始配置
 const parser = require('koa-bodyparser') // 解析koa 返回 ctx.body
 require('./app/models/user') // 引入数据库初始化文件——没有创建数据库

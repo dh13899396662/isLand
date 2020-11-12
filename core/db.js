@@ -8,13 +8,16 @@ const sequelize = new Sequelize(dbName, user, password, {
     timezone: '+08:00',
     define: {
         // create_time update_time delete_time
-        timestamps: false,
+        timestamps: false, // 是否禁用时间戳
         paranoid: true,
+        createdAt: 'created_at',
+        deletedAt: 'deleted_at',
+        update_time: 'update_time',
         undescored: true, // 驼峰改为下划线
         scopes: {
             bh: {
               attributes: {
-                exclude: ['updatedAt', 'deletedAt', 'createdAt']
+                exclude: ['updated_at', 'deleted_at', 'created_at']
               }
             }
           }
