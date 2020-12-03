@@ -1,6 +1,6 @@
 const { sequelize } = require('../../core/db')
 const {
-    Sequelize, Model
+    Sequelize, Model, Op
 } = require('sequelize')
 const { Art } = require('./art')
 class Favor extends Model {
@@ -56,6 +56,45 @@ class Favor extends Model {
             }
         })
         return favor ? true : false
+    }
+
+    static async getMyClassicFavors(uid) {
+        // type !== 400
+        const arts = await Favor.findAll({
+            where: {
+                uid,
+                type: {
+                    [Op.not]: 400
+                }
+            }
+        })
+        if (!arts) {
+            throw new global.errs.NotFound()
+        }
+
+        return await Art.getList(arts)
+    }
+
+    static async getBookFavor(uid, bookID) {
+        const favorNums = Favor.count({
+            where: {
+                art_id: bookID,
+                type: 400
+            }
+        })
+
+        const myFavor = Favor.findOne({
+            where: {
+                art_id: bookID,
+                uid,
+                type: 400
+            }
+        })
+
+        return {
+            fav_nums: favorNums,
+            like_statue: myFavor ? 1 : 0
+        }
     }
 }
 

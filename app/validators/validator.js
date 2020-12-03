@@ -1,7 +1,7 @@
 const { LinValidator, Rule } = require('../../core/lin-validator-v2')
 const { User } = require('../models/user')
 
-const { LoginType } = require('../lib/enum')
+const { LoginType, ArtType } = require('../lib/enum')
 
 class PositiveIntegerValidator extends LinValidator {
     constructor () {
@@ -100,11 +100,24 @@ class NotEmptyValidator extends LinValidator {
   }
 }
 
-function checkType(vals) {
-  if (!vals.body.type) {
+function checkLoginType(vals) {
+  let { type } = vals.path || vals.body
+  if (!type) {
     throw new Error('type是必须参数')
   }
-  if (!LoginType.isThisType(vals.body.type)) {
+  type = parseInt(type)
+  if (!LoginType.isThisType(type)) {
+    throw new Error('type参数不合法')
+  }
+}
+
+function checkArtType(vals) {
+  let type = vals.path.type || vals.body.type
+  if (!type) {
+    throw new Error('type是必须参数')
+  }
+  type = parseInt(type)
+  if (!ArtType.isThisType(type)) {
     throw new Error('type参数不合法')
   }
 }
@@ -112,7 +125,52 @@ function checkType(vals) {
 class LikeValidator extends PositiveIntegerValidator {
   constructor(msg, errorCode){
       super()
-      this.validateType = checkType
+      this.validateType = checkArtType
+  }
+}
+
+class ClassicValidator extends LikeValidator {
+  constructor(msg, errorCode){
+      super()
+  }
+}
+
+class SearchValidator extends LinValidator {
+  constructor() {
+    super()
+    this.q = [
+      new Rule('isLength', '搜索关键词不能为空', {
+        min: 1,
+        max: 16
+      })
+    ]
+    this.start = [
+      new Rule('isInt', '不符合规范', {
+        min: 0,
+        max: 60000
+      }),
+      new Rule('isOptional', '', 0)
+    ]
+    this.count = [
+      new Rule('isInt', '不符合规范', {
+        min: 1,
+        max: 20
+      }),
+      new Rule('isOptional', '', 20)
+    ]
+
+  }
+}
+
+class AddShortCommentValidator extends PositiveIntegerValidator {
+  constructor () {
+    super()
+    this.content = [
+      new Rule('isLength', '必须在1到24个字符之间', {
+        min: 1,
+        max: 12
+      })
+    ]
   }
 }
 
@@ -121,5 +179,8 @@ module.exports = {
     RegisterValidator,
     TokenValidator,
     NotEmptyValidator,
-    LikeValidator
+    LikeValidator,
+    ClassicValidator,
+    SearchValidator,
+    AddShortCommentValidator
 }
